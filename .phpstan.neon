@@ -1,0 +1,4 @@
+parameters:
+    paths:
+        - extensions
+        - framework
