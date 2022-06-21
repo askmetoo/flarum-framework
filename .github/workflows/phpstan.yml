@@ -6,6 +6,13 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        php:
+          - 7.4
+          - 8.0
+          - 8.1
+    name: 'PHPStan ${{ matrix.php }}'
     steps:
       - uses: actions/checkout@v2
       - uses: php-actions/composer@v6
@@ -13,3 +20,4 @@ jobs:
         with:
           configuration: .phpstan.neon
           memory_limit: 256M
+          php_version: "${{ matrix.php }}"
