@@ -10,12 +10,14 @@ jobs:
       matrix:
         php:
           - 7.4
-          - 8.0
-          - 8.1
+#          - 8.0
+#          - 8.1
     name: 'PHPStan ${{ matrix.php }}'
     steps:
       - uses: actions/checkout@v2
       - uses: php-actions/composer@v6
+        with:
+          php_version: "${{ matrix.php }}"
       - uses: php-actions/phpstan@v3
         with:
           configuration: .phpstan.neon
