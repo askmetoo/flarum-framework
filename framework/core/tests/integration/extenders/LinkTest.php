@@ -1,12 +1,18 @@
 <?php
 
+/*
+ * This file is part of Flarum.
+ *
+ * For detailed copyright and license information, please view the
+ * LICENSE file that was distributed with this source code.
+ */
+
 namespace Flarum\Tests\integration\extenders;
 
 use Carbon\Carbon;
 use Flarum\Extend\Link;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
-use Illuminate\Support\Arr;
 
 class LinkTest extends TestCase
 {
@@ -33,7 +39,7 @@ class LinkTest extends TestCase
      */
     public function sets_rel()
     {
-        $this->extend((new Link)->setRel(function () { return 'rel-test';}));
+        $this->extend((new Link)->setRel(function () { return 'rel-test'; }));
 
         $response = $this->send(
             $this->request('GET', '/api/discussions/1', [
@@ -44,7 +50,5 @@ class LinkTest extends TestCase
         );
 
         $json = json_decode($response->getBody()->getContents(), true);
-
-
     }
 }
