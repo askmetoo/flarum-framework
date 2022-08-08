@@ -9,7 +9,7 @@ import GroupBadge from '../../common/components/GroupBadge';
 function badgeForId(id) {
   const group = app.store.getById('groups', id);
 
-  return group ? GroupBadge.component({ group, label: null }) : '';
+  return !!group && GroupBadge.component({ group, label: null });
 }
 
 function filterByRequiredPermissions(groupIds, permission) {

@@ -4,6 +4,7 @@ import { ucfirst } from '../../common/utils/string';
 import usernameHelper from '../../common/helpers/username';
 import icon from '../../common/helpers/icon';
 import Link from '../../common/components/Link';
+import classList from '../../common/utils/classList';
 
 /**
  * The `EventPost` component displays a post which indicating a discussion
@@ -20,7 +21,7 @@ export default class EventPost extends Post {
   elementAttrs() {
     const attrs = super.elementAttrs();
 
-    attrs.className = (attrs.className || '') + ' EventPost ' + ucfirst(this.attrs.post.contentType()) + 'Post';
+    attrs.className = classList(attrs.className, 'EventPost', ucfirst(this.attrs.post.contentType()) + 'Post');
 
     return attrs;
   }

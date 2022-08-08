@@ -2,6 +2,7 @@ import app from '../../common/app';
 import Component from '../Component';
 import icon from '../helpers/icon';
 import listItems from '../helpers/listItems';
+import classList from '../utils/classList';
 
 /**
  * The `Dropdown` component displays a button which, when clicked, shows a
@@ -41,7 +42,7 @@ export default class Dropdown extends Component {
     const renderItems = this.attrs.lazyDraw ? this.showing : true;
 
     return (
-      <div className={'ButtonGroup Dropdown dropdown ' + this.attrs.className + ' itemCount' + items.length + (this.showing ? ' open' : '')}>
+      <div className={classList('ButtonGroup Dropdown dropdown', this.attrs.className, `itemCount${items.length}`, { open: this.showing })}>
         {this.getButton(vnode.children)}
         {renderItems && this.getMenu(items)}
       </div>
@@ -127,14 +128,16 @@ export default class Dropdown extends Component {
    * @protected
    */
   getButtonContent(children) {
-    return [
-      this.attrs.icon ? icon(this.attrs.icon, { className: 'Button-icon' }) : '',
-      <span className="Button-label">{this.attrs.label}</span>,
-      this.attrs.caretIcon ? icon(this.attrs.caretIcon, { className: 'Button-caret' }) : '',
-    ];
+    return (
+      <>
+        {!!this.attrs.icon && icon(this.attrs.icon, { className: 'Button-icon' })}
+        <span className="Button-label">{this.attrs.label}</span>
+        {!!this.attrs.caretIcon && icon(this.attrs.caretIcon, { className: 'Button-caret' })}
+      </>
+    );
   }
 
   getMenu(items) {
-    return <ul className={'Dropdown-menu dropdown-menu ' + this.attrs.menuClassName}>{items}</ul>;
+    return <ul className={classList('Dropdown-menu dropdown-menu', this.attrs.menuClassName)}>{items}</ul>;
   }
 }

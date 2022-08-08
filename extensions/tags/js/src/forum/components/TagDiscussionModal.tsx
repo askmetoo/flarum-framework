@@ -123,7 +123,7 @@ export default class TagDiscussionModal extends Modal<TagDiscussionModalAttrs> {
 
   getInstruction(primaryCount: number, secondaryCount: number) {
     if (this.bypassReqs) {
-      return '';
+      return null;
     }
 
     if (primaryCount < this.minPrimary) {
@@ -134,7 +134,7 @@ export default class TagDiscussionModal extends Modal<TagDiscussionModalAttrs> {
       return app.translator.trans('flarum-tags.forum.choose_tags.choose_secondary_placeholder', { count: remaining });
     }
 
-    return '';
+    return null;
   }
 
   content() {
@@ -174,81 +174,83 @@ export default class TagDiscussionModal extends Modal<TagDiscussionModalAttrs> {
 
     const inputWidth = Math.max(extractText(this.getInstruction(primaryCount, secondaryCount)).length, this.filter().length);
 
-    return [
-      <div className="Modal-body">
-        <div className="TagDiscussionModal-form">
-          <div className="TagDiscussionModal-form-input">
-            <div className={'TagsInput FormControl ' + (this.focused ? 'focus' : '')} onclick={() => this.$('.TagsInput input').focus()}>
-              <span className="TagsInput-selected">
-                {this.selected.map((tag) => (
-                  <span
-                    className="TagsInput-tag"
-                    onclick={() => {
-                      this.removeTag(tag);
-                      this.onready();
-                    }}
-                  >
-                    {tagLabel(tag)}
-                  </span>
-                ))}
-              </span>
-              <input
-                className="FormControl"
-                placeholder={extractText(this.getInstruction(primaryCount, secondaryCount))}
-                bidi={this.filter}
-                style={{ width: inputWidth + 'ch' }}
-                onkeydown={this.navigator.navigate.bind(this.navigator)}
-                onfocus={() => (this.focused = true)}
-                onblur={() => (this.focused = false)}
-              />
+    return (
+      <>
+        <div className="Modal-body">
+          <div className="TagDiscussionModal-form">
+            <div className="TagDiscussionModal-form-input">
+              <div className={classList('TagsInput FormControl', { focus: this.focused })} onclick={() => this.$('.TagsInput input').focus()}>
+                <span className="TagsInput-selected">
+                  {this.selected.map((tag) => (
+                    <span
+                      className="TagsInput-tag"
+                      onclick={() => {
+                        this.removeTag(tag);
+                        this.onready();
+                      }}
+                    >
+                      {tagLabel(tag)}
+                    </span>
+                  ))}
+                </span>
+                <input
+                  className="FormControl"
+                  placeholder={extractText(this.getInstruction(primaryCount, secondaryCount))}
+                  bidi={this.filter}
+                  style={{ width: inputWidth + 'ch' }}
+                  onkeydown={this.navigator.navigate.bind(this.navigator)}
+                  onfocus={() => (this.focused = true)}
+                  onblur={() => (this.focused = false)}
+                />
+              </div>
+            </div>
+            <div className="TagDiscussionModal-form-submit App-primaryControl">
+              <Button
+                type="submit"
+                className="Button Button--primary"
+                disabled={!this.meetsRequirements(primaryCount, secondaryCount)}
+                icon="fas fa-check"
+              >
+                {app.translator.trans('flarum-tags.forum.choose_tags.submit_button')}
+              </Button>
             </div>
           </div>
-          <div className="TagDiscussionModal-form-submit App-primaryControl">
-            <Button
-              type="submit"
-              className="Button Button--primary"
-              disabled={!this.meetsRequirements(primaryCount, secondaryCount)}
-              icon="fas fa-check"
-            >
-              {app.translator.trans('flarum-tags.forum.choose_tags.submit_button')}
-            </Button>
-          </div>
         </div>
-      </div>,
 
-      <div className="Modal-footer">
-        <ul className="TagDiscussionModal-list SelectTagList">
-          {tags
-            .filter((tag) => filter || !tag.parent() || this.selected.includes(tag.parent() as Tag))
-            .map((tag) => (
-              <li
-                data-index={tag.id()}
-                className={classList({
-                  pinned: tag.position() !== null,
-                  child: !!tag.parent(),
-                  colored: !!tag.color(),
-                  selected: this.selected.includes(tag),
-                  active: this.selectedTag === tag,
-                })}
-                style={{ color: tag.color() }}
-                onmouseover={() => (this.selectedTag = tag)}
-                onclick={this.toggleTag.bind(this, tag)}
-              >
-                {tagIcon(tag)}
-                <span className="SelectTagListItem-name">{highlight(tag.name(), filter)}</span>
-                {tag.description() ? <span className="SelectTagListItem-description">{tag.description()}</span> : ''}
-              </li>
-            ))}
-        </ul>
-        {!!app.forum.attribute('canBypassTagCounts') && (
-          <div className="TagDiscussionModal-controls">
-            <ToggleButton className="Button" onclick={() => (this.bypassReqs = !this.bypassReqs)} isToggled={this.bypassReqs}>
-              {app.translator.trans('flarum-tags.forum.choose_tags.bypass_requirements')}
-            </ToggleButton>
-          </div>
-        )}
-      </div>,
-    ];
+        <div className="Modal-footer">
+          <ul className="TagDiscussionModal-list SelectTagList">
+            {tags
+              .filter((tag) => filter || !tag.parent() || this.selected.includes(tag.parent() as Tag))
+              .map((tag) => (
+                <li
+                  data-index={tag.id()}
+                  className={classList({
+                    pinned: tag.position() !== null,
+                    child: !!tag.parent(),
+                    colored: !!tag.color(),
+                    selected: this.selected.includes(tag),
+                    active: this.selectedTag === tag,
+                  })}
+                  style={{ color: tag.color() }}
+                  onmouseover={() => (this.selectedTag = tag)}
+                  onclick={this.toggleTag.bind(this, tag)}
+                >
+                  {tagIcon(tag)}
+                  <span className="SelectTagListItem-name">{highlight(tag.name(), filter)}</span>
+                  {!!tag.description() && <span className="SelectTagListItem-description">{tag.description()}</span>}
+                </li>
+              ))}
+          </ul>
+          {!!app.forum.attribute('canBypassTagCounts') && (
+            <div className="TagDiscussionModal-controls">
+              <ToggleButton className="Button" onclick={() => (this.bypassReqs = !this.bypassReqs)} isToggled={this.bypassReqs}>
+                {app.translator.trans('flarum-tags.forum.choose_tags.bypass_requirements')}
+              </ToggleButton>
+            </div>
+          )}
+        </div>
+      </>
+    );
   }
 
   meetsRequirements(primaryCount: number, secondaryCount: number) {
